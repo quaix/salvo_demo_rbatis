@@ -1,0 +1,4 @@
+/target
+/migration/target
+/.idea/
+/*.lock
