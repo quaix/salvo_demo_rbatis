@@ -6,7 +6,7 @@ server:
     - "https://salvo.rs"
 
 database:
-  database_url: "mysql://root:zjf1qaz!QAZ@localhost/test"
+  database_url: "mysql://root:zjf1qaz!QAZ@localhost/unit_tests"
 
 jwt:
   jwt_secret: "secret"

@@ -18,6 +18,7 @@ mod utils;
 mod entities;
 mod middleware;
 mod routers;
+mod unit_tests;
 
 #[tokio::main]
 async fn main() {
