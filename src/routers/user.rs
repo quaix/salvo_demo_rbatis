@@ -1,3 +1,4 @@
+use rbatis::Page;
 use crate::{
     app_response::ErrorResponseBuilder,
     app_response::{AppResponse, AppResult},
@@ -13,6 +14,7 @@ use salvo::{
     Request, Response,
 };
 use salvo::Writer;
+use crate::entities::user::Users;
 
 #[endpoint(tags("comm"), )]
 pub async fn post_login(req: JsonBody<UserLoginRequest>, res: &mut Response) {
@@ -52,5 +54,11 @@ pub async fn delete_user(id: PathParam<String>) -> AppResponse<()> {
 #[endpoint(tags("users"))]
 pub async fn get_users() -> AppResponse<Vec<UserResponse>> {
     let result = user::users().await;
+    AppResponse(result)
+}
+
+#[endpoint(tags("users"))]
+pub async fn get_users_page() -> AppResponse<Page<Users>> {
+    let result = user::users_page().await;
     AppResponse(result)
 }

@@ -7,7 +7,7 @@ use salvo::{
 use self::{
     demo::hello,
     user::{
-        delete_user, get_users, post_add_user, post_login, put_update_user,
+        delete_user, get_users,get_users_page, post_add_user, post_login, put_update_user,
     },
 };
 
@@ -24,7 +24,8 @@ pub fn router() -> Router {
 
     let mut need_auth_routers = vec![
         Router::with_path("/api/users")
-            .get(get_users)
+            // .get(get_users)
+            .get(get_users_page)
             .post(post_add_user)
             .put(put_update_user)
             .push(

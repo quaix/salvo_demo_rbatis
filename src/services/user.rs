@@ -1,3 +1,4 @@
+use rbatis::{Page, PageRequest};
 use uuid::Uuid;
 
 use crate::{
@@ -79,4 +80,11 @@ pub async fn users() -> AppResult<Vec<UserResponse>> {
         })
         .collect::<Vec<_>>();
     Ok(res)
+}
+
+pub async fn users_page() -> AppResult<Page<Users>> {
+    let db = DB.get().ok_or(anyhow::anyhow!("Database connection failed."))?;
+    let users=Users::select_page(db,&PageRequest::new(1, 10)).await?;
+
+    Ok(users)
 }
