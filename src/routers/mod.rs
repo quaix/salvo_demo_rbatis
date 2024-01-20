@@ -10,6 +10,7 @@ use self::{
         delete_user, get_users, post_add_user, post_login, put_update_user,
     },
 };
+
 pub mod demo;
 pub mod user;
 mod static_routers;
@@ -22,13 +23,14 @@ pub fn router() -> Router {
     let _cors_handler = cors_middleware();
 
     let mut need_auth_routers = vec![
-        Router::with_path("/api/users").get(get_users)
-        .post(post_add_user)
-        .push(
-            Router::with_path("<id>")
-                .put(put_update_user)
-                .delete(delete_user),
-        ),
+        Router::with_path("/api/users")
+            .get(get_users)
+            .post(post_add_user)
+            .put(put_update_user)
+            .push(
+                Router::with_path("<id>")
+                    .delete(delete_user),
+            ),
     ];
 
     let router = Router::new()

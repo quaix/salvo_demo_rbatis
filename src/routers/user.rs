@@ -14,7 +14,7 @@ use salvo::{
 };
 use salvo::Writer;
 
-#[endpoint( tags("comm"),)]
+#[endpoint(tags("comm"), )]
 pub async fn post_login(req: JsonBody<UserLoginRequest>, res: &mut Response) {
     let result: AppResult<UserLoginResponse> = user::login(req.0).await;
     match result {
@@ -36,13 +36,10 @@ pub async fn post_add_user(new_user: JsonBody<UserAddRequest>) -> AppResponse<Us
     AppResponse(result)
 }
 
-#[endpoint(  tags("users"),
-parameters(
-    ("id", description = "user id"),
-))]
-pub async fn put_update_user(req: &mut Request) -> AppResult<AppResponse<UserResponse>> {
-    let req: UserUpdateRequest = req.extract().await?;
-    let result = user::update_user(req).await;
+#[endpoint(tags("users"))]
+pub async fn put_update_user(update_user: JsonBody<UserUpdateRequest>) -> AppResult<AppResponse<UserResponse>> {
+    // let req: UserUpdateRequest = req.extract().await?;
+    let result = user::update_user(update_user.0).await;
     Ok(AppResponse(result))
 }
 
