@@ -28,6 +28,7 @@ uuid = { version = "1.4.1", features = ["v4", "fast-rng", "macro-diagnostics"] }
 validator = { version = "0.16", features = ["derive"] }
 
 dotenv = "0.15.0"
+cargo-watch = "8.5.2"
 
 [profile.release]
 opt-level = 'z' # Optimize for size
