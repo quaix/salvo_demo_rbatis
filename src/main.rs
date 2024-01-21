@@ -1,6 +1,6 @@
 use crate::db::init_db_conn;
 use tokio::signal;
-use tracing::info;
+use tracing::{info, log};
 use crate::middleware::handle_404::handle_404;
 use crate::routers::router;
 use config::{CERT_KEY, CFG};
@@ -8,6 +8,8 @@ use salvo::server::ServerHandle;
 use salvo::catcher::Catcher;
 use salvo::conn::rustls::{Keycert, RustlsConfig};
 use salvo::prelude::*;
+use tracing_subscriber::{EnvFilter, fmt};
+
 mod app_error;
 mod app_response;
 mod config;
@@ -22,15 +24,29 @@ mod unit_tests;
 
 #[tokio::main]
 async fn main() {
+    dotenv::dotenv().ok();
+
+    if std::env::var("RUST_LOG").is_err() {
+        std::env::set_var("RUST_LOG", "info");
+    }
+
+    init_tracing_subscriber();
+
+    log::debug!(
+        "------environment:{:?}",
+        std::env::vars_os().collect::<Vec<_>>()
+    );
+
     //At the same time, logs are only output to the terminal or file
-    let _guard = clia_tracing_config::build()
-        .filter_level(&CFG.log.filter_level)
-        .with_ansi(CFG.log.with_ansi)
-        .to_stdout(CFG.log.to_stdout)
-        .directory(&CFG.log.directory)
-        .file_name(&CFG.log.file_name)
-        .rolling(&CFG.log.rolling)
-        .init();
+    // let _guard = clia_tracing_config::build()
+    //     .filter_level(&CFG.log.filter_level)
+    //     .with_ansi(CFG.log.with_ansi)
+    //     .to_stdout(CFG.log.to_stdout)
+    //     .directory(&CFG.log.directory)
+    //     .file_name(&CFG.log.file_name)
+    //     .rolling(&CFG.log.rolling)
+    //     .init();
+    
     tracing::info!("log level: {}", &CFG.log.filter_level);
 
     init_db_conn().await;
@@ -59,7 +75,7 @@ async fn main() {
             let handle = server.handle();
             tokio::spawn(shutdown_signal(handle));
             server.serve(service).await;
-         }
+        }
         false => {
             println!(
                 "📖 Open API Page: http://{}/swagger-ui",
@@ -70,8 +86,30 @@ async fn main() {
             let handle = server.handle();
             tokio::spawn(shutdown_signal(handle));
             server.serve(service).await;
-            }
+        }
     }
+}
+
+
+fn init_tracing_subscriber() {
+    // 从环境变量中获取日志级别，默认为 info
+    let filter = EnvFilter::try_from_default_env()
+        .unwrap_or_else(|_| EnvFilter::new("info"));
+
+    //https://users.rust-lang.org/t/best-way-to-log-with-json/83385
+    // https://github.com/tokio-rs/tracing/pull/1772
+    let style = std::env::var("RUST_LOG_STYLE").unwrap_or_else(|_| "auto".into());
+    let tracing_format = std::env::var("TRACING_FORMAT").unwrap_or_else(|_| "ansi".into());
+
+    let subscriber_builder = tracing_subscriber::fmt()
+        .with_env_filter(filter)
+        .with_timer(fmt::time::time())
+        .with_ansi(style.to_lowercase() != "never");
+
+    match tracing_format.as_str() {
+        "json" => subscriber_builder.json().init(),
+        _ => subscriber_builder.init(),
+    };
 }
 
 async fn shutdown_signal(handle: ServerHandle) {
@@ -82,7 +120,7 @@ async fn shutdown_signal(handle: ServerHandle) {
     };
 
     #[cfg(unix)]
-    let terminate = async {
+        let terminate = async {
         signal::unix::signal(signal::unix::SignalKind::terminate())
             .expect("failed to install signal handler")
             .recv()
@@ -90,7 +128,7 @@ async fn shutdown_signal(handle: ServerHandle) {
     };
 
     #[cfg(not(unix))]
-    let terminate = std::future::pending::<()>();
+        let terminate = std::future::pending::<()>();
 
     tokio::select! {
         _ = ctrl_c => info!("ctrl_c signal received"),
@@ -114,11 +152,11 @@ mod tests {
             "http://{}",
             &CFG.server.address.replace("0.0.0.0", "127.0.0.1")
         ))
-        .send(&service)
-        .await
-        .take_string()
-        .await
-        .unwrap();
+            .send(&service)
+            .await
+            .take_string()
+            .await
+            .unwrap();
         assert_eq!(content, "Hello World from salvo");
     }
 }

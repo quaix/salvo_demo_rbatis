@@ -1,6 +1,8 @@
 use once_cell::sync::Lazy;
 use serde::Deserialize;
 use std::{fs::File, io::Read, path::Path};
+use tracing::log;
+
 
 #[derive(Debug, Deserialize)]
 pub struct Configs {
@@ -18,6 +20,7 @@ pub struct Server {
     pub cors_allow_origin: Vec<String>,
     pub ssl: bool,
 }
+
 #[derive(Debug, Deserialize)]
 pub struct DataBase {
     pub database_url: String,
@@ -62,15 +65,22 @@ impl Configs {
         };
         let mut cfg_contents = String::new();
         match file.read_to_string(&mut cfg_contents) {
-            Ok(s) => s,
+            Ok(s) => {
+                log::info!("Configuration file read_to_string: {}", s);
+                s
+            }
             Err(e) => panic!("Failed to read configuration file, error message:{}", e),
         };
-        match serde_yaml::from_str(&cfg_contents){
-            Ok(c) => c,
+        match serde_yaml::from_str(&cfg_contents) {
+            Ok(c) => {
+                log::info!("Configuration file from_str: {:?}", c);
+                c
+            }
             Err(e) => panic!("Failed to parse configuration file, error message:{}", e),
         }
     }
 }
+
 pub static CERT_KEY: Lazy<CertKey> = Lazy::new(get_cert_key);
 
 pub struct CertKey {
@@ -83,6 +93,7 @@ impl CertKey {
         Self { cert, key }
     }
 }
+
 fn get_cert_key() -> CertKey {
     let cert = get_string(&CFG.cert.cert);
     let key = get_string(&CFG.cert.key);
