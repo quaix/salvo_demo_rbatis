@@ -7,7 +7,13 @@ use salvo::{
 use self::{
     demo::hello,
     user::{
-        endpoint_delete_user, endpoint_get_users, endpoint_get_users_page, endpoint_post_add_user, endpoint_post_login, endpoint_put_update_user,
+        endpoint_delete_user,
+        endpoint_get_users,
+        endpoint_get_users_page,
+        endpoint_post_add_user,
+        endpoint_post_login,
+        endpoint_put_update_user,
+        endpoint_select_page_by_username_like,
     },
 };
 
@@ -26,7 +32,7 @@ pub fn router() -> Router {
         Router::with_path("/api/users")
             // .get(get_users)
             .get(endpoint_get_users_page)
-            // .push(Router::with_path("page_by").get())
+            .push(Router::with_path("page_by_username").get(endpoint_select_page_by_username_like))
             .post(endpoint_post_add_user)
             .put(endpoint_put_update_user)
             .push(

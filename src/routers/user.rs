@@ -68,3 +68,11 @@ pub async fn endpoint_get_users_page(page_no: QueryParam<u64, false>, page_size:
     AppResponse(result)
 }
 
+#[endpoint(tags("users"))]
+pub async fn endpoint_select_page_by_username_like(page_no: QueryParam<u64, false>, page_size: QueryParam<u64, false>, do_count: QueryParam<bool, false>, username: QueryParam<&str, false>) -> AppResponse<Page<Users>> {
+    let mut page_req = PageRequest::new(page_no.into_inner().unwrap_or(1), page_size.into_inner().unwrap_or(DEFAULT_PAGE_SIZE));
+    page_req.do_count = do_count.into_inner().unwrap_or(true);
+    let result = user::select_page_by_username_like(page_req, username.into_inner().unwrap_or_default()).await;
+    AppResponse(result)
+}
+

@@ -28,14 +28,10 @@ mod tests {
         let data = Users::select_page(&*RB, &PageRequest::new(1, 10)).await;
         println!("------select_page = {}", json!(data));
 
-        let data = Users::select_page_by_username(&*RB, &PageRequest::new(1, 10), "string").await;
+        let data = Users::select_page_by_username(&*RB, &PageRequest::new(1, 100), "string").await;
         println!("------select_page_by_username = {}", json!(data));
 
         let data = Users::select_page_by_limit(&*RB, &PageRequest::new(1, 100), "test", " limit 0,10 ").await;
         println!("------select_page_by_limit = {}", json!(data));
-
-        let data = Users::select_page_by_username_like(&*RB, &PageRequest::new(1, 10), "s").await;
-        println!("------select_page_by_username_like = {}", json!(data));
-
     }
 }

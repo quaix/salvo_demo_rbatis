@@ -87,7 +87,13 @@ pub async fn users() -> AppResult<Vec<UserResponse>> {
 pub async fn users_page(page_req: PageRequest) -> AppResult<Page<Users>> {
     let db = DB.get().ok_or(anyhow::anyhow!("Database connection failed."))?;
     let users = Users::select_page(db, &page_req).await?;
+    Ok(users)
+}
 
-    let res: Page<Users> = serde_json::from_value(json!(users)).unwrap_or_default();
-    Ok(res)
+pub async fn select_page_by_username_like(page_req: PageRequest, username: &str) -> AppResult<Page<Users>> {
+    let db = DB.get().ok_or(anyhow::anyhow!("Database connection failed."))?;
+    let users = Users::select_page_by_username(db, &page_req, username).await?;
+    
+    // let res: Page<Users> = serde_json::from_value(json!(users)).unwrap_or_default();
+    Ok(users)
 }
