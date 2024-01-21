@@ -19,7 +19,6 @@ use self::{
 
 pub mod demo;
 pub mod user;
-mod static_routers;
 
 pub fn router() -> Router {
     let mut no_auth_routers = vec![

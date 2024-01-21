@@ -30,13 +30,11 @@ You chose rbatis, please check the documentation here https://rbatis.github.io/r
 
 ---
 
-# Project directory description
-
 # salvo_demo_rbatis
 
-## 1 publish
+## publish
 
-### 1.2 by docker
+### build by docker
 
 ```shell
 docker build -t salvo_demo_rbatis .
@@ -44,10 +42,28 @@ docker build -t salvo_demo_rbatis .
 docker images
 ```
 
-## 2 run by docker-compose
+### build by docker-compose
+
+```shell
+docker compose up --build
+```
+
+## run
+
+## run by docker-compose
 
 ```shell
 docker compose up -d --force-recreate
+```
+
+---
+
+# create a Dockerfile for it
+
+https://docs.docker.com/language/rust/build-images/
+
+```shell
+docker init
 ```
 
 ---

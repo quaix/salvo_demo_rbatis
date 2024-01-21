@@ -1,16 +1,14 @@
 use rbatis::{Page, PageRequest};
-use serde_json::json;
 use uuid::Uuid;
 
 use crate::{
     app_response::AppResult,
+    db::DB,
     dtos::user::{
         UserAddRequest, UserLoginRequest, UserLoginResponse, UserResponse, UserUpdateRequest,
     },
-    middleware::jwt::get_token,
-    utils::rand_utils, db::DB, entities::user::Users,
+    entities::user::Users, middleware::jwt::get_token, utils::rand_utils,
 };
-use crate::dtos::page::{PageRequestDto};
 
 pub async fn add_user(req: UserAddRequest) -> AppResult<UserResponse> {
     let db = DB.get().ok_or(anyhow::anyhow!("Database connection failed."))?;
@@ -93,7 +91,7 @@ pub async fn users_page(page_req: PageRequest) -> AppResult<Page<Users>> {
 pub async fn select_page_by_username_like(page_req: PageRequest, username: &str) -> AppResult<Page<Users>> {
     let db = DB.get().ok_or(anyhow::anyhow!("Database connection failed."))?;
     let users = Users::select_page_by_username(db, &page_req, username).await?;
-    
+
     // let res: Page<Users> = serde_json::from_value(json!(users)).unwrap_or_default();
     Ok(users)
 }
