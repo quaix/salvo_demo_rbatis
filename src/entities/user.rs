@@ -1,6 +1,6 @@
 use rbatis::{crud, impl_select_page};
 
-pub const TABLE_USERS: &'static str = "users";
+pub const TABLE_USERS: &'static str = "bot_users";
 
 #[derive(Clone, Default, Debug, serde::Serialize, serde::Deserialize)]
 pub struct Users {
