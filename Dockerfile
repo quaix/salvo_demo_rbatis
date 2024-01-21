@@ -26,16 +26,16 @@ RUN --mount=type=bind,source=src,target=src \
     --mount=type=bind,source=Cargo.lock,target=Cargo.lock \
 #    --mount=type=bind,source=config,target=config \
 #    --mount=type=bind,source=data,target=data \
-#    --mount=type=bind,source=init.sh,target=init.sh \
     --mount=type=cache,target=/app/target/ \
     --mount=type=cache,target=/usr/local/cargo/registry/ \
     <<EOF
 set -e
 
 cargo build --locked --release
-cp ./target/release/$APP_NAME /bin/server
-cp -r ./config /bin/config
-cp -r ./data /bin/data
+mkdir -p /bin/$APP_NAME
+cp ./target/release/$APP_NAME /bin/$APP_NAME/server
+cp -r ./config /bin/$APP_NAME/config
+cp -r ./data /bin/$APP_NAME/data
 cp init.sh /bin/init.sh
 
 EOF

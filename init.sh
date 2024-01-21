@@ -1,10 +1,14 @@
 echo "------pwd dir"
 pwd
 #
+APP_NAME=salvo_demo_rbatis
+#
+cd /bin/${APP_NAME}
+pwd
+
 echo "------ls -l"
 ls -l
-echo "------ls -l /bin/"
-ls -l /bin/
+
 #
-cd /bin
-server
+echo "------run server"
+./server
