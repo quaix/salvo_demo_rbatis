@@ -1,4 +1,4 @@
-use rbatis::Page;
+use rbatis::{DEFAULT_PAGE_SIZE, Page, PageRequest};
 use crate::{
     app_response::ErrorResponseBuilder,
     app_response::{AppResponse, AppResult},
@@ -13,11 +13,14 @@ use salvo::{
     oapi::extract::{JsonBody, PathParam},
     Request, Response,
 };
+use salvo::oapi::extract::QueryParam;
+use salvo::prelude::Json;
 use salvo::Writer;
+use crate::dtos::page::{PageRequestDto};
 use crate::entities::user::Users;
 
 #[endpoint(tags("comm"), )]
-pub async fn post_login(req: JsonBody<UserLoginRequest>, res: &mut Response) {
+pub async fn endpoint_post_login(req: JsonBody<UserLoginRequest>, res: &mut Response) {
     let result: AppResult<UserLoginResponse> = user::login(req.0).await;
     match result {
         Ok(data) => {
@@ -33,32 +36,35 @@ pub async fn post_login(req: JsonBody<UserLoginRequest>, res: &mut Response) {
 }
 
 #[endpoint(tags("users"))]
-pub async fn post_add_user(new_user: JsonBody<UserAddRequest>) -> AppResponse<UserResponse> {
+pub async fn endpoint_post_add_user(new_user: JsonBody<UserAddRequest>) -> AppResponse<UserResponse> {
     let result = user::add_user(new_user.0).await;
     AppResponse(result)
 }
 
 #[endpoint(tags("users"))]
-pub async fn put_update_user(update_user: JsonBody<UserUpdateRequest>) -> AppResult<AppResponse<UserResponse>> {
+pub async fn endpoint_put_update_user(update_user: JsonBody<UserUpdateRequest>) -> AppResult<AppResponse<UserResponse>> {
     // let req: UserUpdateRequest = req.extract().await?;
     let result = user::update_user(update_user.0).await;
     Ok(AppResponse(result))
 }
 
 #[endpoint(tags("users"))]
-pub async fn delete_user(id: PathParam<String>) -> AppResponse<()> {
+pub async fn endpoint_delete_user(id: PathParam<String>) -> AppResponse<()> {
     let result = user::delete_user(id.0).await;
     AppResponse(result)
 }
 
 #[endpoint(tags("users"))]
-pub async fn get_users() -> AppResponse<Vec<UserResponse>> {
+pub async fn endpoint_get_users() -> AppResponse<Vec<UserResponse>> {
     let result = user::users().await;
     AppResponse(result)
 }
 
 #[endpoint(tags("users"))]
-pub async fn get_users_page() -> AppResponse<Page<Users>> {
-    let result = user::users_page().await;
+pub async fn endpoint_get_users_page(page_no: QueryParam<u64, false>, page_size: QueryParam<u64, false>, do_count: QueryParam<bool, false>) -> AppResponse<Page<Users>> {
+    let mut page_req = PageRequest::new(page_no.into_inner().unwrap_or(1), page_size.into_inner().unwrap_or(DEFAULT_PAGE_SIZE));
+    page_req.do_count = do_count.into_inner().unwrap_or(true);
+    let result = user::users_page(page_req).await;
     AppResponse(result)
 }
+

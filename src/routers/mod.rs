@@ -7,7 +7,7 @@ use salvo::{
 use self::{
     demo::hello,
     user::{
-        delete_user, get_users,get_users_page, post_add_user, post_login, put_update_user,
+        endpoint_delete_user, endpoint_get_users, endpoint_get_users_page, endpoint_post_add_user, endpoint_post_login, endpoint_put_update_user,
     },
 };
 
@@ -17,7 +17,7 @@ mod static_routers;
 
 pub fn router() -> Router {
     let mut no_auth_routers = vec![
-        Router::with_path("/api/login").post(post_login),
+        Router::with_path("/api/login").post(endpoint_post_login),
     ];
 
     let _cors_handler = cors_middleware();
@@ -25,12 +25,13 @@ pub fn router() -> Router {
     let mut need_auth_routers = vec![
         Router::with_path("/api/users")
             // .get(get_users)
-            .get(get_users_page)
-            .post(post_add_user)
-            .put(put_update_user)
+            .get(endpoint_get_users_page)
+            // .push(Router::with_path("page_by").get())
+            .post(endpoint_post_add_user)
+            .put(endpoint_put_update_user)
             .push(
                 Router::with_path("<id>")
-                    .delete(delete_user),
+                    .delete(endpoint_delete_user),
             ),
     ];
 

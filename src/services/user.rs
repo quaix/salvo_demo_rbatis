@@ -1,4 +1,5 @@
 use rbatis::{Page, PageRequest};
+use serde_json::json;
 use uuid::Uuid;
 
 use crate::{
@@ -9,6 +10,7 @@ use crate::{
     middleware::jwt::get_token,
     utils::rand_utils, db::DB, entities::user::Users,
 };
+use crate::dtos::page::{PageRequestDto};
 
 pub async fn add_user(req: UserAddRequest) -> AppResult<UserResponse> {
     let db = DB.get().ok_or(anyhow::anyhow!("Database connection failed."))?;
@@ -17,7 +19,7 @@ pub async fn add_user(req: UserAddRequest) -> AppResult<UserResponse> {
         username: req.username.clone(),
         password: rand_utils::hash_password(req.password).await?,
     };
-    Users::insert(db,&user).await?;
+    Users::insert(db, &user).await?;
 
     Ok(UserResponse {
         id: user.id,
@@ -27,8 +29,8 @@ pub async fn add_user(req: UserAddRequest) -> AppResult<UserResponse> {
 
 pub async fn login(req: UserLoginRequest) -> AppResult<UserLoginResponse> {
     let db = DB.get().ok_or(anyhow::anyhow!("Database connection failed."))?;
-    let user = Users::select_by_column(db,"username",&req.username).await?;
-    if user.len()==0 {
+    let user = Users::select_by_column(db, "username", &req.username).await?;
+    if user.len() == 0 {
         return Err(anyhow::anyhow!("User does not exist.").into());
     }
     if rand_utils::verify_password(req.password, user[0].password.clone()).await.is_err() {
@@ -46,8 +48,8 @@ pub async fn login(req: UserLoginRequest) -> AppResult<UserLoginResponse> {
 
 pub async fn update_user(req: UserUpdateRequest) -> AppResult<UserResponse> {
     let db = DB.get().ok_or(anyhow::anyhow!("Database connection failed."))?;
-    let users = Users::select_by_column(db,"id",&req.id).await?;
-    if users.len()==0 {
+    let users = Users::select_by_column(db, "id", &req.id).await?;
+    if users.len() == 0 {
         return Err(anyhow::anyhow!("User does not exist.").into());
     }
     let user = Users {
@@ -55,7 +57,7 @@ pub async fn update_user(req: UserUpdateRequest) -> AppResult<UserResponse> {
         username: users[0].clone().username,
         password: rand_utils::hash_password(req.password).await?,
     };
-    Users::update_by_column(db,&user,"id").await?;
+    Users::update_by_column(db, &user, "id").await?;
     Ok(UserResponse {
         id: users[0].id.clone(),
         username: users[0].username.clone(),
@@ -64,13 +66,13 @@ pub async fn update_user(req: UserUpdateRequest) -> AppResult<UserResponse> {
 
 pub async fn delete_user(req: String) -> AppResult<()> {
     let db = DB.get().ok_or(anyhow::anyhow!("Database connection failed."))?;
-    Users::delete_by_column(db, "id",&req).await?;
+    Users::delete_by_column(db, "id", &req).await?;
     Ok(())
 }
 
 pub async fn users() -> AppResult<Vec<UserResponse>> {
     let db = DB.get().ok_or(anyhow::anyhow!("Database connection failed."))?;
-    let users=Users::select_all(db).await?;
+    let users = Users::select_all(db).await?;
 
     let res = users
         .into_iter()
@@ -82,9 +84,10 @@ pub async fn users() -> AppResult<Vec<UserResponse>> {
     Ok(res)
 }
 
-pub async fn users_page() -> AppResult<Page<Users>> {
+pub async fn users_page(page_req: PageRequest) -> AppResult<Page<Users>> {
     let db = DB.get().ok_or(anyhow::anyhow!("Database connection failed."))?;
-    let users=Users::select_page(db,&PageRequest::new(1, 10)).await?;
+    let users = Users::select_page(db, &page_req).await?;
 
-    Ok(users)
+    let res: Page<Users> = serde_json::from_value(json!(users)).unwrap_or_default();
+    Ok(res)
 }
