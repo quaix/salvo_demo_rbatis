@@ -41,15 +41,22 @@ async fn main() {
     let router = router();
     let service: Service = router.into();
     let service = service.catcher(Catcher::default().hoop(handle_404));
-    println!("🌪️ {} is starting ", &CFG.server.name);
-    println!("🔄 listen on {}", &CFG.server.address);
+
+    log::info!("🌪️ {} is starting ", &CFG.server.name);
+    log::info!("🔄 listen on {}", &CFG.server.address);
 
     match CFG.server.ssl {
         true => {
-            println!(
+            // println!(
+            //     "📖 Open API Page: https://{}/swagger-ui",
+            //     &CFG.server.address.replace("0.0.0.0", "127.0.0.1")
+            // );
+
+            log::info!(
                 "📖 Open API Page: https://{}/swagger-ui",
                 &CFG.server.address.replace("0.0.0.0", "127.0.0.1")
             );
+
             let config = RustlsConfig::new(
                 Keycert::new()
                     .cert(CERT_KEY.cert.clone())
@@ -65,10 +72,11 @@ async fn main() {
             server.serve(service).await;
         }
         false => {
-            println!(
+            log::info!(
                 "📖 Open API Page: http://{}/swagger-ui",
                 &CFG.server.address.replace("0.0.0.0", "127.0.0.1")
             );
+
             let acceptor = TcpListener::new(&CFG.server.address).bind().await;
             let server = Server::new(acceptor);
             let handle = server.handle();
