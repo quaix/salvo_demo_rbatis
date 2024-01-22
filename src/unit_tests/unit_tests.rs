@@ -8,6 +8,9 @@ mod tests {
     use rbatis::plugin::page::PageRequest;
     use rbdc_mysql::MysqlDriver;
     use serde_json::json;
+    use tracing::log;
+    use tracing_test::traced_test;
+    use crate::config::Configs;
 
     use crate::entities::user::Users;
     use crate::unit_tests::unit_tests::RB;
@@ -33,5 +36,12 @@ mod tests {
 
         let data = Users::select_page_by_limit(&*RB, &PageRequest::new(1, 100), "test", " limit 0,10 ").await;
         println!("------select_page_by_limit = {}", json!(data));
+    }
+
+    #[traced_test]
+    #[tokio::test]
+    async fn test_config_and_env() {
+        Configs::init_by_config_and_environment();
+        log::debug!("test_config_and_env end")
     }
 }

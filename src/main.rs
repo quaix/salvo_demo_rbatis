@@ -46,8 +46,6 @@ async fn main() {
     //     .file_name(&CFG.log.file_name)
     //     .rolling(&CFG.log.rolling)
     //     .init();
-    
-    tracing::info!("log level: {}", &CFG.log.filter_level);
 
     init_db_conn().await;
     let router = router();

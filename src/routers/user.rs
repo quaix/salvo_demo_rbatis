@@ -11,10 +11,9 @@ use salvo::{
     oapi::endpoint,
     http::cookie::Cookie,
     oapi::extract::{JsonBody, PathParam},
-    Request, Response,
+    Response,
 };
 use salvo::oapi::extract::QueryParam;
-use salvo::prelude::Json;
 use salvo::Writer;
 use crate::entities::user::Users;
 
