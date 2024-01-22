@@ -47,11 +47,6 @@ async fn main() {
 
     match CFG.server.ssl {
         true => {
-            // println!(
-            //     "📖 Open API Page: https://{}/swagger-ui",
-            //     &CFG.server.address.replace("0.0.0.0", "127.0.0.1")
-            // );
-
             log::info!(
                 "📖 Open API Page: https://{}/swagger-ui",
                 &CFG.server.address.replace("0.0.0.0", "127.0.0.1")
