@@ -4,12 +4,12 @@ use crate::config::CFG;
 
 pub fn cors_middleware() -> CorsHandler {
     log::info!("------cors middleware cors_allow_origin:{:?}",&CFG.server.cors_allow_origin);
-    let mut cors = Cors::new();
+    let cors = Cors::new();
     for origin in &CFG.server.cors_allow_origin {
         if origin.contains("*") {
-            &cors.clone().allow_origin(AllowOrigin::any());
+            cors.clone().allow_origin(AllowOrigin::any());
         } else {
-            &cors.clone().allow_origin(origin);
+            cors.clone().allow_origin(origin);
         }
         log::info!("------cors middleware allow_origin:{:?}",origin)
     }

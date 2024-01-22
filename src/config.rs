@@ -26,6 +26,7 @@ pub struct Server {
 #[derive(Debug, Deserialize)]
 pub struct DataBase {
     pub database_url: String,
+    pub init: bool,
 }
 
 #[derive(Debug, Deserialize)]

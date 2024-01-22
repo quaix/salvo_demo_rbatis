@@ -7,6 +7,7 @@ server:
 
 database:
   database_url: "mysql://root:zjf1qaz!QAZ@100.64.0.8/test"
+  init: true
 
 jwt:
   jwt_secret: "secret"
