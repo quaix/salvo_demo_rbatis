@@ -44,7 +44,8 @@ pub struct Cert {
 
 const CONFIG_FILE: &str = "config/config.yml";
 
-pub static CFG: Lazy<Configs> = Lazy::new(self::Configs::init_by_serde_yaml);
+// pub static CFG: Lazy<Configs> = Lazy::new(self::Configs::init_by_serde_yaml);
+pub static CFG: Lazy<Configs> = Lazy::new(self::Configs::init_by_config_and_environment);
 
 fn deserialize_cors_allow_origin<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
     where
