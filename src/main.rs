@@ -37,16 +37,6 @@ async fn main() {
         std::env::vars_os().collect::<Vec<_>>()
     );
 
-    //At the same time, logs are only output to the terminal or file
-    // let _guard = clia_tracing_config::build()
-    //     .filter_level(&CFG.log.filter_level)
-    //     .with_ansi(CFG.log.with_ansi)
-    //     .to_stdout(CFG.log.to_stdout)
-    //     .directory(&CFG.log.directory)
-    //     .file_name(&CFG.log.file_name)
-    //     .rolling(&CFG.log.rolling)
-    //     .init();
-
     init_db_conn().await;
     let router = router();
     let service: Service = router.into();
