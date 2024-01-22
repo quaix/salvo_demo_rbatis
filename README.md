@@ -15,11 +15,6 @@ cargo run
 cargo test
 ```
 
-# Tip
-
-- If you choose sqlite or have initialized the data in the users table, please use the account zhangsan with password
-  123 to login.
-
 # orm doc or home page link
 
 You chose rbatis, please check the documentation here https://rbatis.github.io/rbatis.io/#/v4/
